@@ -1,0 +1,1 @@
+# impulsive-momentum-indicator
