@@ -54,11 +54,16 @@ test('US-C1・US-D1・US-D2: エンブレムを押すと +1 され、残り枠�
 
 test('US-E1・US-E2: 10票で上限の表示になり、11票目は数えない', async ({ page }) => {
   for (let i = 0; i < 10; i++) await vote(page)
-  await expect(activeSlide(page).getByTestId('count')).toHaveText('123,466')
   await expect(page.getByTestId('meter')).toHaveText('いまは、ここまで')
+  await expect(page.locator('.pip.on')).toHaveCount(0)
   await expect(activeSlide(page).locator('button.emblem')).toHaveAttribute('aria-disabled', 'true')
-  await vote(page)
-  await expect(activeSlide(page).getByTestId('count')).toHaveText('123,466')
+  // 10回の確定待ちで1秒を超え、模擬変動が入るため、11票目を押す前後の値を比べる。
+  // 時計を進めずに比べ、模擬変動が入らないようにする
+  const count = activeSlide(page).getByTestId('count')
+  const before = await count.textContent()
+  await activeSlide(page).locator('button.emblem').click()
+  await expect(count).toHaveText(before ?? '')
+  await expect(page.getByTestId('meter')).toHaveClass(/shake-/)
 })
 
 test('US-D3: 時間が進むと他ユーザー分が模擬変動する', async ({ page }) => {
