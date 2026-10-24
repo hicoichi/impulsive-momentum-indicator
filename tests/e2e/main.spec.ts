@@ -61,7 +61,8 @@ test('US-E1・US-E2: 10票で上限の表示になり、11票目は数えない'
   // 時計を進めずに比べ、模擬変動が入らないようにする
   const count = activeSlide(page).getByTestId('count')
   const before = await count.textContent()
-  await activeSlide(page).locator('button.emblem').click()
+  // 時計を止めているため演出の完了を待てない。静止待ちを省いて押す
+  await activeSlide(page).locator('button.emblem').click({ force: true })
   await expect(count).toHaveText(before ?? '')
   await expect(page.getByTestId('meter')).toHaveClass(/shake-/)
 })
