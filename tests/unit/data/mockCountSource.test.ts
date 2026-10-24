@@ -9,7 +9,7 @@ describe('モックの模擬サーバー', () => {
     const source = createTestSource({ now: clock.now })
     const snap = source.read(clock.now())
     expect(snap.others).toEqual(MOCK_INITIAL_OTHER_COUNTS)
-    expect(snap.mine).toEqual({ ikki: 0, revolution: 0, exodus: 0, festival: 0 })
+    expect(snap.mine).toEqual({ ikki: 0, exodus: 0, festival: 0 })
   })
 
   it('US-E1: 10票目は受け付け、11票目は拒否する', async () => {
@@ -26,8 +26,8 @@ describe('モックの模擬サーバー', () => {
     const clock = createClock()
     const source = createTestSource({ now: clock.now })
     for (let i = 0; i < 10; i++) await source.submitVote('ikki', `i${i}`)
-    expect(await source.submitVote('revolution', 'r0')).toEqual({ ok: true, duplicate: false })
-    expect(source.read(clock.now()).mine).toMatchObject({ ikki: 10, revolution: 1 })
+    expect(await source.submitVote('exodus', 'e0')).toEqual({ ok: true, duplicate: false })
+    expect(source.read(clock.now()).mine).toMatchObject({ ikki: 10, exodus: 1 })
   })
 
   it('US-E3・Q-13: 12時間で自分の票が外れ、枠が回復する', async () => {

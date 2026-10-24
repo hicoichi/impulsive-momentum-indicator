@@ -110,7 +110,7 @@ test.describe('スマホ', () => {
     await expect(activeSlide(page).getByRole('heading')).toHaveText('一揆したい')
     // 左へ大きくスワイプすると次へ
     await swipe(box.x + 300, box.x + 100)
-    await expect(activeSlide(page).getByRole('heading')).toHaveText('革命したい')
+    await expect(activeSlide(page).getByRole('heading')).toHaveText('国外脱出したい')
     // 右へスワイプすると前へ
     await swipe(box.x + 100, box.x + 300)
     await expect(activeSlide(page).getByRole('heading')).toHaveText('一揆したい')
@@ -141,7 +141,7 @@ test.describe('PC', () => {
     const prev = page.getByRole('button', { name: '前の衝動' })
     const next = page.getByRole('button', { name: '次の衝動' })
     await expect(prev).toBeDisabled()
-    for (let i = 0; i < 3; i++) await next.click()
+    for (let i = 0; i < 2; i++) await next.click()
     await expect(activeSlide(page).getByRole('heading')).toHaveText('祭りたい')
     await expect(next).toBeDisabled()
   })
@@ -149,7 +149,7 @@ test.describe('PC', () => {
   test('US-B5: キーボードの ← → で切り替わる', async ({ page }) => {
     await page.locator('.root').focus()
     await page.keyboard.press('ArrowRight')
-    await expect(activeSlide(page).getByRole('heading')).toHaveText('革命したい')
+    await expect(activeSlide(page).getByRole('heading')).toHaveText('国外脱出したい')
     await page.keyboard.press('ArrowLeft')
     await expect(activeSlide(page).getByRole('heading')).toHaveText('一揆したい')
   })

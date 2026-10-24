@@ -7,7 +7,6 @@ import { formatCount } from '../domain/format'
 import EmblemExodus from './emblems/EmblemExodus.vue'
 import EmblemFestival from './emblems/EmblemFestival.vue'
 import EmblemIkki from './emblems/EmblemIkki.vue'
-import EmblemRevolution from './emblems/EmblemRevolution.vue'
 
 const props = defineProps<{
   impulse: ImpulseDefinition
@@ -27,7 +26,6 @@ const emit = defineEmits<{
 
 const EMBLEMS: Record<ImpulseKey, Component> = {
   ikki: EmblemIkki,
-  revolution: EmblemRevolution,
   exodus: EmblemExodus,
   festival: EmblemFestival,
 }
@@ -84,7 +82,8 @@ const voteLabel = computed(() => props.count === null
 
 <style scoped>
 .slide {
-  width: 25%;
+  /* 衝動の数で幅を分ける（--slide-count は MainScreen の .track で指定） */
+  width: calc(100% / var(--slide-count));
   height: 100%;
   flex: none;
   display: flex;

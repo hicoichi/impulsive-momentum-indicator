@@ -36,8 +36,10 @@ const shakeEffect = computed(() => (effect.value === 'limit' ? variant.value : n
 const liveEffect = computed(() => (liveCount.value > 0 ? effectVariant(liveCount.value) : null))
 
 const trackStyle = computed(() => ({
-  transform: `translateX(calc(${-index.value * 25}% + ${offset.value}px))`,
-  transition: dragging.value ? 'none' : 'transform .5s cubic-bezier(.2, .8, .2, 1)',
+  '--slide-count': IMPULSE_COUNT,
+  // .track は全スライドを横に並べた幅なので、1枚ぶんは全体の 1/衝動の数
+  'transform': `translateX(calc(${-index.value * (100 / IMPULSE_COUNT)}% + ${offset.value}px))`,
+  'transition': dragging.value ? 'none' : 'transform .5s cubic-bezier(.2, .8, .2, 1)',
 }))
 
 const swipeIgnore = { [SWIPE_IGNORE_ATTR]: '' }
@@ -219,7 +221,7 @@ onBeforeUnmount(board.stop)
 
 .track {
   display: flex;
-  width: 400%;
+  width: calc(var(--slide-count) * 100%);
   height: 100%;
   position: relative;
 }

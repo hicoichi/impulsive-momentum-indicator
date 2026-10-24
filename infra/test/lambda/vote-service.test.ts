@@ -22,7 +22,7 @@ describe('castVote', () => {
   test('受け付けると集計と残り枠に反映される', async () => {
     const { deps } = setup()
     const result = await castVote(deps, 's1', 'ikki', 'v1')
-    expect(result).toEqual({ status: 'accepted', remaining: { ikki: 9, revolution: 10, exodus: 10, festival: 10 } })
+    expect(result).toEqual({ status: 'accepted', remaining: { ikki: 9, exodus: 10, festival: 10 } })
     expect((await getCounts(deps)).ikki).toBe(1)
   })
 
@@ -38,7 +38,7 @@ describe('castVote', () => {
   test('US-E1: 上限はセッションごと・衝動ごとに独立', async () => {
     const { deps } = setup()
     await voteTimes(deps, 's1', 10)
-    expect((await castVote(deps, 's1', 'revolution', 'r1')).status).toBe('accepted')
+    expect((await castVote(deps, 's1', 'exodus', 'e1')).status).toBe('accepted')
     expect((await castVote(deps, 's2', 'ikki', 'x1')).status).toBe('accepted')
   })
 

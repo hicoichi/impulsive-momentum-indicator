@@ -46,9 +46,15 @@ describe('MainScreen', () => {
     expect(w.get('[data-testid="simulation-badge"]').text()).toBe('SIMULATION仮の数値・模擬更新')
   })
 
+  it('衝動は「一揆したい」「国外脱出したい」「祭りたい」の3種類で、この順に並ぶ', () => {
+    const w = render()
+    expect(slides(w).map(s => s.get('h2').text())).toEqual(['一揆したい', '国外脱出したい', '祭りたい'])
+    expect(w.text()).not.toContain('革命したい')
+  })
+
   it('US-A1: 表示中の衝動は1つだけで、初期は「一揆したい」とモックの初期値', () => {
     const w = render()
-    expect(slides(w)).toHaveLength(4)
+    expect(slides(w)).toHaveLength(3)
     expect(slides(w).filter(s => s.attributes('aria-hidden') === 'false')).toHaveLength(1)
     const active = activeSlide(w)
     expect(active.get('h2').text()).toBe('一揆したい')
@@ -79,8 +85,8 @@ describe('MainScreen', () => {
     const root = w.get('.root')
     expect(root.attributes('style')).toContain('background: #C42A1C')
     await root.trigger('keydown', { key: 'ArrowRight' })
-    expect(activeSlide(w).get('h2').text()).toBe('革命したい')
-    expect(root.attributes('style')).toContain('background: #141212')
+    expect(activeSlide(w).get('h2').text()).toBe('国外脱出したい')
+    expect(root.attributes('style')).toContain('background: #18256B')
     await root.trigger('keydown', { key: 'ArrowLeft' })
     expect(activeSlide(w).get('h2').text()).toBe('一揆したい')
   })
@@ -90,7 +96,7 @@ describe('MainScreen', () => {
     const prev = w.get('button[aria-label="前の衝動"]')
     const next = w.get('button[aria-label="次の衝動"]')
     expect(prev.attributes('disabled')).toBeDefined()
-    for (let i = 0; i < 3; i++) await next.trigger('click')
+    for (let i = 0; i < 2; i++) await next.trigger('click')
     expect(activeSlide(w).get('h2').text()).toBe('祭りたい')
     expect(next.attributes('disabled')).toBeDefined()
     expect(prev.attributes('disabled')).toBeUndefined()
@@ -99,11 +105,11 @@ describe('MainScreen', () => {
   it('US-B3・US-B6: インジケーターで現在位置がわかり、押すと移動する', async () => {
     const w = render()
     const dots = w.findAll('button.dot')
-    expect(dots).toHaveLength(4)
+    expect(dots).toHaveLength(3)
     expect(dots[0]?.classes()).toContain('on')
-    await dots[2]?.trigger('click')
+    await dots[1]?.trigger('click')
     expect(activeSlide(w).get('h2').text()).toBe('国外脱出したい')
-    expect(w.findAll('button.dot')[2]?.classes()).toContain('on')
+    expect(w.findAll('button.dot')[1]?.classes()).toContain('on')
   })
 
   it('US-C3・US-D2: 初回ガイドとピップ。投票するとガイドが消え、ピップが減る', async () => {

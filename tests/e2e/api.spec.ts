@@ -5,7 +5,7 @@ import { expect, test, type Page, type Route } from '@playwright/test'
 const API_BASE_URL = (process.env.E2E_API_BASE_URL ?? '').replace(/\/+$/, '')
 test.skip(!API_BASE_URL, 'E2E_API_BASE_URL を指定した API 接続版のビルドだけで確かめる')
 
-type Key = 'ikki' | 'revolution' | 'exodus' | 'festival'
+type Key = 'ikki' | 'exodus' | 'festival'
 type Counts = Record<Key, number>
 
 const CORS_HEADERS = {
@@ -16,8 +16,8 @@ const CORS_HEADERS = {
 
 /** 投票を受け付けるかどうかを、テストごとに切り替えられる偽のバックエンド */
 class FakeBackend {
-  counts: Counts = { ikki: 1000, revolution: 2000, exodus: 3000, festival: 4000 }
-  remaining: Counts = { ikki: 10, revolution: 10, exodus: 10, festival: 10 }
+  counts: Counts = { ikki: 1000, exodus: 3000, festival: 4000 }
+  remaining: Counts = { ikki: 10, exodus: 10, festival: 10 }
   voteStatus: 200 | 409 | 429 = 200
   readonly requests: { method: string, path: string, token: string | null }[] = []
 

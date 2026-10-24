@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MESSAGE_FIRST_VOTE, MESSAGE_LIMIT, TICK_INTERVAL_MS, useImpulseBoard } from '../../../app/composables/useImpulseBoard'
 import { createMockCountSource } from '../../../app/data/mockCountSource'
 import { MOCK_INITIAL_OTHER_COUNTS } from '../../../app/data/mockInitialCounts'
+import { IMPULSE_COUNT } from '../../../app/domain/impulse'
 import { VOTE_WINDOWS_MS } from '../../../app/domain/vote'
 import { createClock, createTestSource } from '../helpers'
 
@@ -28,9 +29,10 @@ describe('useImpulseBoard', () => {
     const { board } = setup()
     board.prev()
     expect(board.index.value).toBe(0)
-    board.goTo(3)
+    const last = IMPULSE_COUNT - 1
+    board.goTo(last)
     board.next()
-    expect(board.index.value).toBe(3)
+    expect(board.index.value).toBe(last)
     expect(board.currentKey.value).toBe('festival')
   })
 
@@ -38,7 +40,7 @@ describe('useImpulseBoard', () => {
     const { board } = setup()
     await board.vote()
     expect(board.counts.value.ikki).toBe(MOCK_INITIAL_OTHER_COUNTS.ikki + 1)
-    expect(board.counts.value.revolution).toBe(MOCK_INITIAL_OTHER_COUNTS.revolution)
+    expect(board.counts.value.exodus).toBe(MOCK_INITIAL_OTHER_COUNTS.exodus)
     expect(board.effect.value).toBe('vote')
   })
 

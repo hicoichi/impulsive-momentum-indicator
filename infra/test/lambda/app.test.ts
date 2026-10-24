@@ -35,7 +35,7 @@ describe('GET /counts', () => {
     const response = await handler(event('GET /counts'))
     expect(response.statusCode).toBe(200)
     expect(response.headers?.['cache-control']).toBe('public, max-age=5')
-    expect(parse(response)).toEqual({ counts: { ikki: 0, revolution: 0, exodus: 0, festival: 1 } })
+    expect(parse(response)).toEqual({ counts: { ikki: 0, exodus: 0, festival: 1 } })
   })
 })
 
@@ -47,7 +47,7 @@ describe('POST /sessions', () => {
     expect(response.headers?.['cache-control']).toBe('no-store')
     const body = parse(response)
     expect(verifySession(body.token, KEY, NOW)).not.toBeNull()
-    expect(body.remaining).toEqual({ ikki: 10, revolution: 10, exodus: 10, festival: 10 })
+    expect(body.remaining).toEqual({ ikki: 10, exodus: 10, festival: 10 })
   })
 })
 
@@ -103,6 +103,7 @@ describe('POST /votes', () => {
     ['本文なし', undefined],
     ['JSON でない', 'not json'],
     ['存在しない衝動', { impulse: 'riot', voteId: 'v1' }],
+    ['削除した衝動（革命したい）', { impulse: 'revolution', voteId: 'v1' }],
     ['票 ID が不正', { impulse: 'ikki', voteId: 'a b' }],
     ['票 ID が長すぎる', { impulse: 'ikki', voteId: 'a'.repeat(65) }],
     ['本文が大きすぎる', { impulse: 'ikki', voteId: 'v1', pad: 'x'.repeat(2000) }],

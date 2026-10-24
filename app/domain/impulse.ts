@@ -1,6 +1,7 @@
 // 衝動の種類・順序・表示テーマの定義。種類と順序はここだけで決める。
 
-export const IMPULSE_KEYS = ['ikki', 'revolution', 'exodus', 'festival'] as const
+// 「革命したい」は「一揆したい」と重なるため削除した（2026-10-24）
+export const IMPULSE_KEYS = ['ikki', 'exodus', 'festival'] as const
 
 export type ImpulseKey = (typeof IMPULSE_KEYS)[number]
 
@@ -26,11 +27,6 @@ export const IMPULSES: Record<ImpulseKey, ImpulseDefinition> = {
     label: '一揆したい',
     theme: { background: '#C42A1C', foreground: '#FFF4EA', accent: '#FFD9A0' },
   },
-  revolution: {
-    key: 'revolution',
-    label: '革命したい',
-    theme: { background: '#141212', foreground: '#F4F0E8', accent: '#E8432A' },
-  },
   exodus: {
     key: 'exodus',
     label: '国外脱出したい',
@@ -49,7 +45,6 @@ export const IMPULSE_COUNT = IMPULSE_KEYS.length
 export function createImpulseRecord<T>(initial: (key: ImpulseKey) => T): Record<ImpulseKey, T> {
   return {
     ikki: initial('ikki'),
-    revolution: initial('revolution'),
     exodus: initial('exodus'),
     festival: initial('festival'),
   }

@@ -18,7 +18,7 @@
 
 ```ts
 // 例：衝動の定義は1か所に集約する
-export const IMPULSE_KEYS = ['ikki', 'revolution', 'exodus', 'festival'] as const
+export const IMPULSE_KEYS = ['ikki', 'exodus', 'festival'] as const
 export type ImpulseKey = (typeof IMPULSE_KEYS)[number]
 ```
 
@@ -31,7 +31,7 @@ export type ImpulseKey = (typeof IMPULSE_KEYS)[number]
 - コンポーネントのファイル名は PascalCase（例：`ImpulseSlide.vue`）。
 - props と emits は型で定義する（`defineProps<…>()`、`defineEmits<…>()`）。
 - コンポーネントは表示とユーザー操作の受け渡しに専念させ、投票・上限・集計のロジックを書かない。ロジックは composable とドメイン層に置く。
-- 4つの衝動で構造が同じ部分は1つのコンポーネントにまとめ、データで差し替える。エンブレムの SVG は衝動ごとに別コンポーネントにしてよい。
+- 衝動ごとに構造が同じ部分は1つのコンポーネントにまとめ、データで差し替える。エンブレムの SVG は衝動ごとに別コンポーネントにしてよい。
 
 ## ディレクトリと責務
 

@@ -71,12 +71,14 @@ describe('DynamoDB の VoteStore', () => {
   test('セッションの記録を衝動ごとに読み、不正な項目は無視する', async () => {
     const send = jest.fn().mockResolvedValue({
       Items: [
-        { sk: 'IMPULSE#revolution', votes: [{ id: 'r1', at: 10 }, { broken: true }], version: 2 },
-        { sk: 'IMPULSE#unknown', votes: [], version: 1 },
+        { sk: 'IMPULSE#exodus', votes: [{ id: 'e1', at: 10 }, { broken: true }], version: 2 },
+        // 削除した衝動（革命したい）の古い記録は無視する
+        { sk: 'IMPULSE#revolution', votes: [{ id: 'r1', at: 10 }], version: 1 },
       ],
     })
     const result = await storeWith(send).getSessionVotes('AAAAAAAAAAAAAAAAAAAAAA')
-    expect(result.revolution).toEqual({ votes: [{ id: 'r1', at: 10 }], version: 2 })
+    expect(result.exodus).toEqual({ votes: [{ id: 'e1', at: 10 }], version: 2 })
+    expect(Object.keys(result)).toEqual(['ikki', 'exodus', 'festival'])
     expect(result.ikki).toEqual({ votes: [], version: 0 })
     expect(send.mock.calls[0][0].input).toMatchObject({ ConsistentRead: true })
   })

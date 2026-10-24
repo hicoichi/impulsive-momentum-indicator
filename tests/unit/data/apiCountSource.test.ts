@@ -3,7 +3,7 @@ import { COUNTS_POLL_INTERVAL_MS, createApiCountSource, SESSION_TOKEN_HEADER, ty
 import { parseApiBaseUrl } from '../../../app/data/createCountSource'
 
 const BASE = 'https://api.example.com'
-const FULL = { ikki: 10, revolution: 10, exodus: 10, festival: 10 }
+const FULL = { ikki: 10, exodus: 10, festival: 10 }
 
 function memoryStorage(initial: string | null = null): TokenStorage & { value: string | null } {
   return {
@@ -49,12 +49,12 @@ describe('createApiCountSource', () => {
   })
 
   it('10秒ごとに GET /counts で集計数を取得する', async () => {
-    const fetch = fakeFetch(() => jsonResponse(200, { counts: { ikki: 5, revolution: 6, exodus: 7, festival: 8 } }))
+    const fetch = fakeFetch(() => jsonResponse(200, { counts: { ikki: 5, exodus: 7, festival: 8 } }))
     const source = createApiCountSource({ baseUrl: `${BASE}/`, fetch, storage: memoryStorage() })
     source.advance(0)
     await flush()
     expect(fetch).toHaveBeenCalledWith(`${BASE}/counts`)
-    expect(source.read(0).others).toEqual({ ikki: 5, revolution: 6, exodus: 7, festival: 8 })
+    expect(source.read(0).others).toEqual({ ikki: 5, exodus: 7, festival: 8 })
     source.advance(COUNTS_POLL_INTERVAL_MS - 1)
     expect(fetch).toHaveBeenCalledTimes(1)
     source.advance(COUNTS_POLL_INTERVAL_MS)
@@ -65,7 +65,7 @@ describe('createApiCountSource', () => {
     let fail = false
     const fetch = fakeFetch(() => {
       if (fail) throw new Error('network')
-      return jsonResponse(200, { counts: { ikki: 5, revolution: 6, exodus: 7, festival: 8 } })
+      return jsonResponse(200, { counts: { ikki: 5, exodus: 7, festival: 8 } })
     })
     const source = createApiCountSource({ baseUrl: BASE, fetch, storage: memoryStorage() })
     source.advance(0)
@@ -95,7 +95,7 @@ describe('createApiCountSource', () => {
 
   it('自分の票が確定すると、次の取得までの間も +1 が残る', async () => {
     const fetch = fakeFetch((url) => {
-      if (url.endsWith('/counts')) return jsonResponse(200, { counts: { ikki: 100, revolution: 0, exodus: 0, festival: 0 } })
+      if (url.endsWith('/counts')) return jsonResponse(200, { counts: { ikki: 100, exodus: 0, festival: 0 } })
       return jsonResponse(200, { result: 'accepted', token: 't', remaining: { ...FULL, ikki: 9 } })
     })
     const source = createApiCountSource({ baseUrl: BASE, fetch, storage: memoryStorage('t') })
@@ -108,7 +108,7 @@ describe('createApiCountSource', () => {
 
   it('上限（409）で自分の票数が判明しても、表示の合計は変えない', async () => {
     const fetch = fakeFetch((url) => {
-      if (url.endsWith('/counts')) return jsonResponse(200, { counts: { ikki: 100, revolution: 0, exodus: 0, festival: 0 } })
+      if (url.endsWith('/counts')) return jsonResponse(200, { counts: { ikki: 100, exodus: 0, festival: 0 } })
       return jsonResponse(409, { error: 'limit', token: 't', remaining: { ...FULL, ikki: 0 } })
     })
     const source = createApiCountSource({ baseUrl: BASE, fetch, storage: memoryStorage('t') })
@@ -150,7 +150,7 @@ describe('createApiCountSource', () => {
   it('保存済みのトークンがあれば残り枠を取り直す', async () => {
     const fetch = fakeFetch((url) => {
       if (url.endsWith('/sessions/me')) return jsonResponse(200, { token: 't2', remaining: { ...FULL, festival: 4 } })
-      return jsonResponse(200, { counts: { ikki: 0, revolution: 0, exodus: 0, festival: 0 } })
+      return jsonResponse(200, { counts: { ikki: 0, exodus: 0, festival: 0 } })
     })
     const storage = memoryStorage('t1')
     const source = createApiCountSource({ baseUrl: BASE, fetch, storage })
