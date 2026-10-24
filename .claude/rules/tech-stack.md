@@ -7,7 +7,7 @@
 | 項目 | 方針 |
 |---|---|
 | フロントエンド | Nuxt ベースの Web アプリケーション |
-| バックエンド | フェーズ1はなし（API・サーバーサイド処理を作らない）。フェーズ2で AWS 上に構築する（構成は T-08 で未定） |
+| バックエンド | フェーズ1はなし（API・サーバーサイド処理を作らない）。フェーズ2で AWS 上に構築する。IaC は AWS CDK（TypeScript）で、同じリポジトリの `infra/` に置く（規約は `.claude/rules/infra.md`）。サービス構成は T-08 で未定 |
 | データベース | フェーズ1はなし。フェーズ2で AWS 上に用意する |
 | 集計 | 実際の複数ユーザー間の集計は行わない。モックデータで表現する |
 | 対象デバイス | モバイル主軸、PC にも対応するレスポンシブ UI |
@@ -39,6 +39,8 @@
 - タグは `package.json` の `version` から作る（`v1.2.3`）。同じタグのリリースがすでにあれば、リリースは作らない。**リリースするときは `version` を上げてから main に push する。**
 - 公開用ビルドでは検証用の環境変数（`NUXT_PUBLIC_VOTE_WINDOW`、`NUXT_PUBLIC_SHOW_PIPS`）を設定しない。設定されていた場合、ワークフローは失敗する。
 - 検査はすべて必須で、どれかが失敗するとリリースも Pages の更新もしない。
+- 公開する画面（Release の zip と Pages）は、GitHub の変数 `API_BASE_URL` があれば API 接続版、なければモック版。E2E はモック版（`tests/e2e/main.spec.ts`）と、API への通信をスタブした API 接続版（`tests/e2e/api.spec.ts`。`E2E_API_BASE_URL` を指定したときだけ動く）の両方を通す。
+- バックエンドは `.github/workflows/infra.yml` が検査とデプロイを行う（`.claude/rules/infra.md` の「デプロイ」）。
 - GitHub Pages：main への push のたびに更新する（Release と違い、`version` を上げなくても更新される）。Release の zip はルートで動く版、Pages はサブパス（`/impulsive-momentum-indicator/`）版で、それぞれ書き出して E2E を通してから公開する。
 - E2E をサブパスで確かめるときは `E2E_BASE_PATH=/impulsive-momentum-indicator/` を指定する（書き出し時の `NUXT_APP_BASE_URL` と合わせる）。
 
@@ -57,4 +59,5 @@
 
 - 新しい依存を追加する前に、上の「採用しないもの」に当たらないか、標準 API や既存の依存で代替できないかを確認する。
 - 追加したら理由をこのファイルに追記する。
+- `infra/` の依存：AWS SDK v3（DynamoDB、SSM。Lambda に同梱する）、`@types/aws-lambda`、esbuild（Lambda のバンドル。Docker を使わないため）。
 - npm 11 は依存パッケージのインストールスクリプトを既定で保留する。現在、esbuild と unrs-resolver のスクリプトが保留のままだが、ビルド・テストは動いている。許可する場合は `npm approve-scripts` を使い、事前にユーザーに確認する。

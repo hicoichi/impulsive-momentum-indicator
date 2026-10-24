@@ -49,6 +49,18 @@ npx playwright install --with-deps chromium
 NUXT_PUBLIC_VOTE_WINDOW=60s npm run dev
 ```
 
+## バックエンド（フェーズ2）
+
+AWS CDK で `infra/` に構築します（GitHub Pages → CloudFront → API Gateway → Lambda → DynamoDB）。手順と規約は [infra/README.md](infra/README.md) と [.claude/rules/infra.md](.claude/rules/infra.md) を参照してください。
+
+バックエンドは、`infra/` などに影響する変更を main に push すると GitHub Actions（`.github/workflows/infra.yml`）が AWS にデプロイします。
+
+画面をバックエンドに接続するには、ビルド時に環境変数 `NUXT_PUBLIC_API_BASE_URL` へ CDK の出力 `ApiBaseUrl` を指定します。GitHub Actions では変数 `API_BASE_URL` から渡します。指定しなければモック（フェーズ1）で動きます。
+
+```bash
+NUXT_PUBLIC_API_BASE_URL=https://xxxx.cloudfront.net npm run dev
+```
+
 ## リリース
 
 main に push すると GitHub Actions（`.github/workflows/release.yml`）が検査と静的生成を行い、次の2つに公開します。
