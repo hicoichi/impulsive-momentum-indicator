@@ -9,6 +9,14 @@ import type { Construct } from 'constructs'
 export const GITHUB_REPOSITORY = 'hicoichi/impulsive-momentum-indicator'
 export const DEPLOY_BRANCH = 'main'
 
+/**
+ * GitHub の ID トークンの sub に入るリポジトリの識別子。
+ * このリポジトリは変更されない ID 付きの形式（所有者名@所有者 ID/リポジトリ名@リポジトリ ID）を使う。
+ * 名前を変えたり、同じ名前で作り直したりしても、別のリポジトリが一致することはない。
+ * 確認方法：gh api repos/hicoichi/impulsive-momentum-indicator/actions/oidc/customization/sub
+ */
+export const GITHUB_SUBJECT_PREFIX = 'repo:hicoichi@263043014/impulsive-momentum-indicator@1422911838'
+
 const GITHUB_OIDC_URL = 'https://token.actions.githubusercontent.com'
 
 export class GithubDeployStack extends cdk.Stack {
@@ -28,7 +36,7 @@ export class GithubDeployStack extends cdk.Stack {
       assumedBy: new iam.WebIdentityPrincipal(provider.oidcProviderArn, {
         StringEquals: {
           'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
-          'token.actions.githubusercontent.com:sub': `repo:${GITHUB_REPOSITORY}:ref:refs/heads/${DEPLOY_BRANCH}`,
+          'token.actions.githubusercontent.com:sub': `${GITHUB_SUBJECT_PREFIX}:ref:refs/heads/${DEPLOY_BRANCH}`,
         },
       }),
     })

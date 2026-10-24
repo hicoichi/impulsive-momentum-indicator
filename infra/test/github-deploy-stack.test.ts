@@ -22,7 +22,7 @@ describe('GithubDeployStack', () => {
           Condition: {
             StringEquals: {
               'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
-              'token.actions.githubusercontent.com:sub': 'repo:hicoichi/impulsive-momentum-indicator:ref:refs/heads/main',
+              'token.actions.githubusercontent.com:sub': 'repo:hicoichi@263043014/impulsive-momentum-indicator@1422911838:ref:refs/heads/main',
             },
           },
         })],
