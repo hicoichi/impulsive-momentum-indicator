@@ -27,6 +27,9 @@ export default defineNuxtConfig({
       // 公開用ビルドでは設定せず、この既定値で動かす。
       voteWindow: '12h',
       showPips: true,
+      // バックエンド（infra/ の CloudFront）の URL。ビルド時の環境変数 NUXT_PUBLIC_API_BASE_URL で指定する。
+      // 空ならモック（フェーズ1）で動く
+      apiBaseUrl: '',
     },
   },
   compatibilityDate: '2026-10-24',

@@ -1,5 +1,8 @@
 import { expect, test, type Page } from '@playwright/test'
 
+// モック（フェーズ1）で動くビルドのテスト。API 接続版のビルドは api.spec.ts で確かめる
+test.skip(!!process.env.E2E_API_BASE_URL, 'API 接続版のビルドでは api.spec.ts を使う')
+
 // 模擬変動（1秒ごと）と投票の確定（140ms）を手で進めるため、時計を止めて始める
 test.beforeEach(async ({ page }) => {
   await page.clock.install({ time: new Date('2026-10-24T09:00:00+09:00') })

@@ -64,9 +64,11 @@ export function useImpulseBoard(options: ImpulseBoardOptions) {
     key => snapshot.value.mine[key] + (pendingKey.value === key ? 1 : 0),
   ))
 
-  const counts = computed(() => createImpulseRecord(
-    key => snapshot.value.others[key] + used.value[key],
-  ))
+  // 集計数をまだ取得できていない衝動は null
+  const counts = computed(() => createImpulseRecord<number | null>((key) => {
+    const others = snapshot.value.others
+    return others ? others[key] + used.value[key] : null
+  }))
 
   const remaining = computed(() => remainingVotes(used.value[currentKey.value]))
   const capped = computed(() => remaining.value === 0)
@@ -114,6 +116,10 @@ export function useImpulseBoard(options: ImpulseBoardOptions) {
     try {
       const result = await source.submitVote(key, voteId)
       if (!result.ok) trigger('limit')
+    }
+    catch {
+      // 通信に失敗した票は数えない。確定待ちを外すと、押した瞬間の +1 も元に戻る
+      effect.value = null
     }
     finally {
       pendingKey.value = null

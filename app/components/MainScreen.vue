@@ -3,21 +3,25 @@
 import { computed, onBeforeUnmount, onMounted } from 'vue'
 import { effectVariant, useImpulseBoard } from '../composables/useImpulseBoard'
 import { SWIPE_IGNORE_ATTR, useSwipe } from '../composables/useSwipe'
-import { createMockCountSource } from '../data/mockCountSource'
+import { createCountSource } from '../data/createCountSource'
 import { IMPULSE_COUNT, IMPULSE_KEYS, IMPULSES } from '../domain/impulse'
 import type { VerificationConfig } from '../domain/verificationConfig'
-import { VOTE_LIMIT, VOTE_WINDOWS_MS } from '../domain/vote'
+import { VOTE_LIMIT } from '../domain/vote'
 import ImpulseSlide from './ImpulseSlide.vue'
 import PageDots from './PageDots.vue'
 import VoteMeter from './VoteMeter.vue'
 
 const props = defineProps<{
   config: VerificationConfig
+  /** バックエンドの URL。null ならモックで動く */
+  apiBaseUrl?: string | null
 }>()
 
 const board = useImpulseBoard({
-  source: createMockCountSource({ windowMs: VOTE_WINDOWS_MS[props.config.voteWindow] }),
+  source: createCountSource({ apiBaseUrl: props.apiBaseUrl ?? null, voteWindow: props.config.voteWindow }),
 })
+// モックで動いている間は、数値が模擬であることを常に示す（US-A3）
+const isSimulation = !props.apiBaseUrl
 const { index, currentKey, counts, remaining, capped, message, effect, effectCount, liveCount } = board
 
 const swipe = useSwipe({ index, count: IMPULSE_COUNT, goTo: board.goTo })
@@ -69,6 +73,7 @@ onBeforeUnmount(board.stop)
     <header class="head">
       <span class="tagline">世界の空気を、衝動で測る。</span>
       <span
+        v-if="isSimulation"
         class="badge"
         data-testid="simulation-badge"
       >SIMULATION<br>仮の数値・模擬更新</span>

@@ -1,10 +1,10 @@
-// 集計数の取得と投票の送信の境界。フェーズ2で AWS のバックエンド実装に差し替える。
+// 集計数の取得と投票の送信の境界。モック（mockCountSource.ts）と AWS（apiCountSource.ts）の実装がある。
 
 import type { ImpulseKey } from '../domain/impulse'
 
 export interface CountSnapshot {
-  /** 他ユーザー分の有効票数 */
-  others: Record<ImpulseKey, number>
+  /** 他ユーザー分の有効票数。まだ取得できていなければ null */
+  others: Record<ImpulseKey, number> | null
   /** 自分の有効票数（確定済みのもの） */
   mine: Record<ImpulseKey, number>
 }
@@ -18,6 +18,6 @@ export interface ImpulseCountSource {
   read(now: number): CountSnapshot
   /** 時間経過を反映する */
   advance(now: number): void
-  /** 票を送り、確定したら結果を返す。同じ voteId の票は1票としてしか数えない */
+  /** 票を送り、確定したら結果を返す。同じ voteId の票は1票としてしか数えない。通信に失敗したら例外を投げる */
   submitVote(key: ImpulseKey, voteId: string): Promise<VoteResult>
 }

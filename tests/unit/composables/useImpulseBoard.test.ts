@@ -112,6 +112,26 @@ describe('useImpulseBoard', () => {
     expect(board.counts.value.ikki).toBe(MOCK_INITIAL_OTHER_COUNTS.ikki)
   })
 
+  it('通信に失敗した票は数えず、押した瞬間の +1 を元に戻す', async () => {
+    const clock = createClock()
+    const failing = createTestSource({ now: clock.now })
+    failing.submitVote = () => Promise.reject(new Error('network'))
+    const board = useImpulseBoard({ source: failing, now: clock.now, random: () => 0.5 })
+    await board.vote()
+    expect(board.counts.value.ikki).toBe(MOCK_INITIAL_OTHER_COUNTS.ikki)
+    expect(board.remaining.value).toBe(10)
+    expect(board.effect.value).toBeNull()
+  })
+
+  it('集計数をまだ取得できていなければ null', () => {
+    const clock = createClock()
+    const source = createTestSource({ now: clock.now })
+    const read = source.read.bind(source)
+    source.read = at => ({ ...read(at), others: null })
+    const board = useImpulseBoard({ source, now: clock.now })
+    expect(board.counts.value.ikki).toBeNull()
+  })
+
   it('切り替えると演出が解除される', async () => {
     const { board } = setup()
     await board.vote()

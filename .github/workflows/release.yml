@@ -2,6 +2,8 @@
 # - GitHub Release：タグは package.json の version から作る（例：1.2.3 → v1.2.3）。
 #   同じタグがすでにある場合は、リリースは作らない。
 # - GitHub Pages：push のたびに更新する。サブパス（/リポジトリ名/）で配信するため、別に書き出す。
+# - 公開する画面は、変数 API_BASE_URL（バックエンドの URL）が設定されていれば API に接続する版、なければモック版。
+#   E2E はモック版（main.spec.ts）と、API への通信をスタブした API 接続版（api.spec.ts）の両方を確かめる。
 name: Release
 
 on:
@@ -25,6 +27,7 @@ jobs:
       contents: write
     env:
       PAGES_BASE_PATH: /${{ github.event.repository.name }}/
+      API_BASE_URL: ${{ vars.API_BASE_URL }}
     steps:
       - name: リポジトリを取得
         uses: actions/checkout@v7
@@ -58,14 +61,31 @@ jobs:
       - name: 単体テスト
         run: npm test
 
-      - name: 静的サイトを生成
+      - name: 静的サイトを生成（モック版）
+        env:
+          NUXT_PUBLIC_API_BASE_URL: ''
         run: npm run generate
 
       # 生成した成果物そのものを、スマホと PC のビューポートで確かめる
       - name: E2E 用のブラウザをインストール
         run: npx playwright install --with-deps chromium
 
-      - name: E2E テスト
+      - name: E2E テスト（モック版）
+        env:
+          E2E_API_BASE_URL: ''
+        run: npm run test:e2e
+
+      # Release の zip には公開用（API 接続版）を入れる。API_BASE_URL がなければモック版のまま
+      - name: 静的サイトを生成（API 接続版）
+        if: env.API_BASE_URL != ''
+        env:
+          NUXT_PUBLIC_API_BASE_URL: ${{ env.API_BASE_URL }}
+        run: npm run generate
+
+      - name: E2E テスト（API 接続版）
+        if: env.API_BASE_URL != ''
+        env:
+          E2E_API_BASE_URL: ${{ env.API_BASE_URL }}
         run: npm run test:e2e
 
       - name: バージョンとタグを決定
@@ -107,11 +127,13 @@ jobs:
       - name: GitHub Pages 用に静的サイトを生成
         env:
           NUXT_APP_BASE_URL: ${{ env.PAGES_BASE_PATH }}
+          NUXT_PUBLIC_API_BASE_URL: ${{ env.API_BASE_URL }}
         run: npm run generate
 
       - name: E2E テスト（GitHub Pages 用）
         env:
           E2E_BASE_PATH: ${{ env.PAGES_BASE_PATH }}
+          E2E_API_BASE_URL: ${{ env.API_BASE_URL }}
         run: npm run test:e2e
 
       - name: GitHub Pages 用の成果物をアップロード

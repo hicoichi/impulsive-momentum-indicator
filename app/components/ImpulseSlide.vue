@@ -11,7 +11,8 @@ import EmblemRevolution from './emblems/EmblemRevolution.vue'
 
 const props = defineProps<{
   impulse: ImpulseDefinition
-  count: number
+  /** 集計数。まだ取得できていなければ null */
+  count: number | null
   active: boolean
   capped: boolean
   /** 投票の演出。null なら再生しない */
@@ -31,8 +32,13 @@ const EMBLEMS: Record<ImpulseKey, Component> = {
   festival: EmblemFestival,
 }
 
-const formattedCount = computed(() => formatCount(props.count))
-const voteLabel = computed(() => `${props.impulse.label}（${formattedCount.value}票）に1票を投じる`)
+/** 集計数を取得できるまでの表示 */
+const PENDING_COUNT = '—'
+
+const formattedCount = computed(() => (props.count === null ? PENDING_COUNT : formatCount(props.count)))
+const voteLabel = computed(() => props.count === null
+  ? `${props.impulse.label}（集計中）に1票を投じる`
+  : `${props.impulse.label}（${formattedCount.value}票）に1票を投じる`)
 </script>
 
 <template>

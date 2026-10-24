@@ -131,6 +131,19 @@ describe('MainScreen', () => {
     expect(w.get('[data-testid="meter"]').classes().some(c => c.startsWith('shake-'))).toBe(true)
   })
 
+  it('バックエンドに接続するときは模擬データのバッジを出さず、取得前は集計数を「—」にする', () => {
+    vi.stubGlobal('fetch', vi.fn(() => new Promise(() => {})))
+    try {
+      wrapper = mount(MainScreen, { props: { config: DEFAULT_CONFIG, apiBaseUrl: 'https://api.example.com' }, attachTo: document.body })
+      expect(wrapper.find('[data-testid="simulation-badge"]').exists()).toBe(false)
+      expect(activeSlide(wrapper).get('[data-testid="count"]').text()).toBe('—')
+      expect(activeSlide(wrapper).get('button.emblem').attributes('aria-label')).toBe('一揆したい（集計中）に1票を投じる')
+    }
+    finally {
+      vi.unstubAllGlobals()
+    }
+  })
+
   it('US-V2: ピップ非表示の設定ではピップを出さず、メッセージは出す', () => {
     const w = render({ voteWindow: '12h', showPips: false })
     expect(w.find('[data-testid="pips"]').exists()).toBe(false)
