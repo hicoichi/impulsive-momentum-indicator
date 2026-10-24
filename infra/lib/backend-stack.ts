@@ -32,8 +32,11 @@ export interface BackendStackProps extends cdk.StackProps {
   budget?: CostBudgetProps
 }
 
-/** Lambda から import する app/domain を含めてバンドルするため、リポジトリのルートを基準にする */
-const REPOSITORY_ROOT = path.join(__dirname, '../..')
+/**
+ * バンドルの基準ディレクトリ。esbuild を infra/node_modules から使うため infra/ にする。
+ * Lambda が相対パスで import する app/domain は、基準の外でも esbuild がそのまま取り込む
+ */
+const INFRA_ROOT = path.join(__dirname, '..')
 
 export class BackendStack extends cdk.Stack {
   readonly stage: Stage
@@ -67,7 +70,7 @@ export class BackendStack extends cdk.Stack {
     const fn = new nodejs.NodejsFunction(this, 'ApiFunction', {
       entry: path.join(__dirname, '../lambda/api/handler.ts'),
       handler: 'handler',
-      projectRoot: REPOSITORY_ROOT,
+      projectRoot: INFRA_ROOT,
       depsLockFilePath: path.join(__dirname, '../package-lock.json'),
       runtime: lambda.Runtime.NODEJS_24_X,
       architecture: lambda.Architecture.ARM_64,

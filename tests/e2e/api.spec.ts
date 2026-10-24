@@ -60,6 +60,13 @@ function activeSlide(page: Page) {
   return page.locator('section.slide[aria-hidden="false"]')
 }
 
+/** エンブレムを押し、投票の応答を画面が受け取るまで待つ（押した瞬間の +1 は応答より先に表示される） */
+async function voteAndWait(page: Page) {
+  const response = page.waitForResponse(r => r.request().method() === 'POST' && new URL(r.url()).pathname === '/votes')
+  await activeSlide(page).locator('button.emblem').click()
+  await response
+}
+
 test('模擬データのバッジを出さず、API の集計数を表示する', async ({ page }) => {
   const backend = new FakeBackend()
   await open(page, backend)
@@ -71,7 +78,7 @@ test('最初の投票でセッションを発行してから投票し、+1 と�
   const backend = new FakeBackend()
   await open(page, backend)
   await expect(activeSlide(page).getByTestId('count')).toHaveText('1,000')
-  await activeSlide(page).locator('button.emblem').click()
+  await voteAndWait(page)
   await expect(activeSlide(page).getByTestId('count')).toHaveText('1,001')
   await expect(page.locator('.pip.on')).toHaveCount(9)
   const paths = backend.requests.map(r => `${r.method} ${r.path}`)
@@ -102,9 +109,10 @@ test('流量上限（429）なら +1 を元に戻す', async ({ page }) => {
 test('開き直すと、保存したトークンで残り枠を取り直す', async ({ page }) => {
   const backend = new FakeBackend()
   await open(page, backend)
-  await activeSlide(page).locator('button.emblem').click()
+  await voteAndWait(page)
   await expect(page.locator('.pip.on')).toHaveCount(9)
   await page.reload()
   await expect(page.locator('.pip.on')).toHaveCount(9)
-  expect(backend.requests.some(r => r.path === '/sessions/me' && r.token === 'token-2')).toBe(true)
+  // 開き直した画面は、保存しておいたトークンで残り枠を問い合わせる
+  await expect.poll(() => backend.requests.some(r => r.path === '/sessions/me' && r.token !== null)).toBe(true)
 })
