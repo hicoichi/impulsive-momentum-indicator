@@ -1,0 +1,100 @@
+# main への push で静的サイトをビルドし、GitHub Release として公開する。
+# リリースのタグは package.json の version から作る（例：1.2.3 → v1.2.3）。
+# 同じタグがすでにある場合は、ビルドと検査だけ行い、リリースは作らない。
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+# タグの作成とリリースの公開に必要
+permissions:
+  contents: write
+
+# 連続して push されたとき、同じタグのリリースを同時に作ろうとしないよう直列にする
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: リポジトリを取得
+        uses: actions/checkout@v7
+
+      - name: Node.js をセットアップ
+        uses: actions/setup-node@v7
+        with:
+          # .claude/rules/tech-stack.md の暫定案（T-01）に合わせる
+          node-version: '24'
+          cache: npm
+
+      # 検証用の設定は公開用ビルドに含めない（USM US-V1・V2、Q-14）
+      - name: 検証用の環境変数が設定されていないことを確認
+        run: |
+          for name in NUXT_PUBLIC_VOTE_WINDOW NUXT_PUBLIC_SHOW_PIPS; do
+            if [ -n "${!name:-}" ]; then
+              echo "::error::公開用ビルドでは ${name} を設定できません"
+              exit 1
+            fi
+          done
+
+      - name: 依存関係をインストール
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: 型チェック
+        run: npm run typecheck
+
+      - name: 単体テスト
+        run: npm test
+
+      - name: 静的サイトを生成
+        run: npm run generate
+
+      # 生成した成果物そのものを、スマホと PC のビューポートで確かめる
+      - name: E2E 用のブラウザをインストール
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E テスト
+        run: npm run test:e2e
+
+      - name: バージョンとタグを決定
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          tag="v${version}"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          if gh release view "${tag}" > /dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::${tag} のリリースはすでにあるため、リリースを作りません。リリースするには package.json の version を上げてください"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 成果物を zip にまとめる
+        if: steps.version.outputs.exists == 'false'
+        id: package
+        run: |
+          asset="impulsive-momentum-indicator-${{ steps.version.outputs.tag }}.zip"
+          (cd .output/public && zip -r -q "${GITHUB_WORKSPACE}/${asset}" .)
+          echo "asset=${asset}" >> "$GITHUB_OUTPUT"
+
+      - name: GitHub Release を作成
+        if: steps.version.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.version.outputs.tag }}" \
+            "${{ steps.package.outputs.asset }}" \
+            --target "${GITHUB_SHA}" \
+            --title "${{ steps.version.outputs.tag }}" \
+            --generate-notes

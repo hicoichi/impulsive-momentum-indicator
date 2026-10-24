@@ -1,0 +1,427 @@
+<!-- 「一揆したい」のエンブレム。SVG はモックからそのまま移植している -->
+<template>
+  <svg
+    viewBox="0 0 320 320"
+    role="img"
+    aria-label="傘連判状の筵旗を掲げ、竹槍を突き上げる群衆"
+  >
+    <g fill="#A81F13">
+      <polygon points="160,300 488.4,211.9 468.1,156.3" />
+      <polygon points="160,300 438.5,104.9 400.4,59.6" />
+      <polygon points="160,300 355,21.5 303.7,-8" />
+      <polygon points="160,300 248,-28.4 189.6,-38.7" />
+      <polygon points="160,300 130.4,-38.7 72,-28.4" />
+      <polygon points="160,300 16.3,-8 -35,21.5" />
+      <polygon points="160,300 -80.4,59.6 -118.5,104.9" />
+      <polygon points="160,300 -148.1,156.3 -168.4,211.9" />
+    </g>
+    <g
+      fill="#F3DFC4"
+      stroke="#A81F13"
+      stroke-width="2.5"
+    >
+      <g transform="rotate(-42 160 300)"><polygon
+        points="155.5,290 164.5,290 164.5,100 155.5,82"
+        stroke="none"
+      /><line
+        x1="155.5"
+        y1="230"
+        x2="164.5"
+        y2="230"
+      /><line
+        x1="155.5"
+        y1="170"
+        x2="164.5"
+        y2="170"
+      /></g>
+      <g transform="rotate(-28 160 300)"><polygon
+        points="155.5,290 164.5,290 164.5,78 155.5,60"
+        stroke="none"
+      /><line
+        x1="155.5"
+        y1="230"
+        x2="164.5"
+        y2="230"
+      /><line
+        x1="155.5"
+        y1="160"
+        x2="164.5"
+        y2="160"
+      /></g>
+      <g transform="rotate(-14 160 300)"><polygon
+        points="155.5,290 164.5,290 164.5,92 155.5,74"
+        stroke="none"
+      /><line
+        x1="155.5"
+        y1="230"
+        x2="164.5"
+        y2="230"
+      /><line
+        x1="155.5"
+        y1="165"
+        x2="164.5"
+        y2="165"
+      /></g>
+      <g transform="rotate(0 160 300)"><polygon
+        points="155.5,290 164.5,290 164.5,70 155.5,52"
+        stroke="none"
+      /><line
+        x1="155.5"
+        y1="230"
+        x2="164.5"
+        y2="230"
+      /><line
+        x1="155.5"
+        y1="150"
+        x2="164.5"
+        y2="150"
+      /></g>
+      <g transform="rotate(14 160 300)"><polygon
+        points="155.5,290 164.5,290 164.5,88 155.5,70"
+        stroke="none"
+      /><line
+        x1="155.5"
+        y1="230"
+        x2="164.5"
+        y2="230"
+      /><line
+        x1="155.5"
+        y1="160"
+        x2="164.5"
+        y2="160"
+      /></g>
+      <g transform="rotate(28 160 300)"><polygon
+        points="155.5,290 164.5,290 164.5,76 155.5,58"
+        stroke="none"
+      /><line
+        x1="155.5"
+        y1="230"
+        x2="164.5"
+        y2="230"
+      /><line
+        x1="155.5"
+        y1="155"
+        x2="164.5"
+        y2="155"
+      /></g>
+      <g transform="rotate(42 160 300)"><polygon
+        points="155.5,290 164.5,290 164.5,98 155.5,80"
+        stroke="none"
+      /><line
+        x1="155.5"
+        y1="230"
+        x2="164.5"
+        y2="230"
+      /><line
+        x1="155.5"
+        y1="170"
+        x2="164.5"
+        y2="170"
+      /></g>
+    </g>
+    <line
+      x1="190"
+      y1="300"
+      x2="214"
+      y2="24"
+      stroke="#1A0F0C"
+      stroke-width="7"
+    />
+    <g class="wave amb">
+      <line
+        x1="211"
+        y1="40"
+        x2="300"
+        y2="52"
+        stroke="#1A0F0C"
+        stroke-width="5"
+      />
+      <polygon
+        points="212,44 298,56 292,168 204,154"
+        fill="#EBD7A6"
+        stroke="#1A0F0C"
+        stroke-width="4"
+        stroke-linejoin="round"
+      />
+      <g
+        stroke="#CDB377"
+        stroke-width="2"
+      >
+        <line
+          x1="211"
+          y1="57.75"
+          x2="297.25"
+          y2="70"
+        />
+        <line
+          x1="210"
+          y1="71.5"
+          x2="296.5"
+          y2="84"
+        />
+        <line
+          x1="209"
+          y1="85.25"
+          x2="295.75"
+          y2="98"
+        />
+        <line
+          x1="208"
+          y1="99"
+          x2="295"
+          y2="112"
+        />
+        <line
+          x1="207"
+          y1="112.75"
+          x2="294.25"
+          y2="126"
+        />
+        <line
+          x1="206"
+          y1="126.5"
+          x2="293.5"
+          y2="140"
+        />
+        <line
+          x1="205"
+          y1="140.25"
+          x2="292.75"
+          y2="154"
+        />
+      </g>
+      <g
+        stroke="#1A0F0C"
+        stroke-width="3"
+        fill="none"
+      >
+        <circle
+          cx="251"
+          cy="106"
+          r="11"
+        />
+        <line
+          x1="267"
+          y1="106"
+          x2="281"
+          y2="106"
+        />
+        <line
+          x1="264.9"
+          y1="98"
+          x2="277"
+          y2="91"
+        />
+        <line
+          x1="259"
+          y1="92.1"
+          x2="266"
+          y2="80"
+        />
+        <line
+          x1="251"
+          y1="90"
+          x2="251"
+          y2="76"
+        />
+        <line
+          x1="243"
+          y1="92.1"
+          x2="236"
+          y2="80"
+        />
+        <line
+          x1="237.1"
+          y1="98"
+          x2="225"
+          y2="91"
+        />
+        <line
+          x1="235"
+          y1="106"
+          x2="221"
+          y2="106"
+        />
+        <line
+          x1="237.1"
+          y1="114"
+          x2="225"
+          y2="121"
+        />
+        <line
+          x1="243"
+          y1="119.9"
+          x2="236"
+          y2="132"
+        />
+        <line
+          x1="251"
+          y1="122"
+          x2="251"
+          y2="136"
+        />
+        <line
+          x1="259"
+          y1="119.9"
+          x2="266"
+          y2="132"
+        />
+        <line
+          x1="264.9"
+          y1="114"
+          x2="277"
+          y2="121"
+        />
+      </g>
+    </g>
+    <g fill="#5E140C">
+      <circle
+        cx="10"
+        cy="252"
+        r="15"
+      /><circle
+        cx="40"
+        cy="252"
+        r="15"
+      /><circle
+        cx="70"
+        cy="252"
+        r="15"
+      /><circle
+        cx="100"
+        cy="252"
+        r="15"
+      /><circle
+        cx="130"
+        cy="252"
+        r="15"
+      /><circle
+        cx="160"
+        cy="252"
+        r="15"
+      /><circle
+        cx="190"
+        cy="252"
+        r="15"
+      /><circle
+        cx="220"
+        cy="252"
+        r="15"
+      /><circle
+        cx="250"
+        cy="252"
+        r="15"
+      /><circle
+        cx="280"
+        cy="252"
+        r="15"
+      /><circle
+        cx="310"
+        cy="252"
+        r="15"
+      />
+      <rect
+        x="0"
+        y="252"
+        width="320"
+        height="40"
+      />
+    </g>
+    <g
+      class="raise amb"
+      stroke="#1A0F0C"
+      stroke-width="13"
+      stroke-linecap="round"
+      fill="#1A0F0C"
+    >
+      <line
+        x1="58"
+        y1="272"
+        x2="44"
+        y2="208"
+      /><circle
+        cx="43"
+        cy="200"
+        r="11"
+        stroke="none"
+      />
+      <line
+        x1="120"
+        y1="272"
+        x2="112"
+        y2="224"
+      /><circle
+        cx="111"
+        cy="217"
+        r="10"
+        stroke="none"
+      />
+      <line
+        x1="268"
+        y1="272"
+        x2="282"
+        y2="206"
+      /><circle
+        cx="283"
+        cy="198"
+        r="11"
+        stroke="none"
+      />
+    </g>
+    <g fill="#1A0F0C">
+      <circle
+        cx="0"
+        cy="276"
+        r="19"
+      /><circle
+        cx="38"
+        cy="276"
+        r="19"
+      /><circle
+        cx="76"
+        cy="276"
+        r="19"
+      /><circle
+        cx="114"
+        cy="276"
+        r="19"
+      /><circle
+        cx="152"
+        cy="276"
+        r="19"
+      /><circle
+        cx="190"
+        cy="276"
+        r="19"
+      /><circle
+        cx="228"
+        cy="276"
+        r="19"
+      /><circle
+        cx="266"
+        cy="276"
+        r="19"
+      /><circle
+        cx="304"
+        cy="276"
+        r="19"
+      />
+      <rect
+        x="0"
+        y="276"
+        width="320"
+        height="44"
+      />
+    </g>
+  </svg>
+</template>
+
+<style scoped>
+  .wave{transform-box:fill-box;transform-origin:0% 0%;animation:wave 2.6s ease-in-out infinite}
+  @keyframes wave{0%,100%{transform:skewY(0deg) scaleX(1)}50%{transform:skewY(-4deg) scaleX(.96)}}
+  .raise{animation:raise 1.5s ease-in-out infinite}
+  @keyframes raise{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@media (prefers-reduced-motion: reduce) {
+  .amb { animation: none !important; }
+}
+</style>

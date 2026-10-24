@@ -1,0 +1,17 @@
+html,
+body {
+  margin: 0;
+}
+
+body {
+  font-family: 'IBM Plex Sans JP', 'Hiragino Sans', sans-serif;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}

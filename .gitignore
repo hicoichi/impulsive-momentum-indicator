@@ -1,0 +1,28 @@
+# Nuxt のビルド成果物
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# 依存関係
+node_modules
+
+# ログ
+logs
+*.log
+
+# テスト結果
+test-results
+playwright-report
+
+# 環境変数
+.env
+.env.*
+!.env.example
+
+# その他
+.DS_Store
+.fleet
+.idea
