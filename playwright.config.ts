@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test'
 
 const PORT = 3100
+// サブパスで配信する成果物（GitHub Pages 用）を確かめるときに指定する。例：/impulsive-momentum-indicator/
+const BASE_PATH = process.env.E2E_BASE_PATH ?? '/'
 
 // スマホ（390×844）と PC（1280×800）の2つのビューポートで、静的生成した成果物を確かめる
 export default defineConfig({
@@ -9,7 +11,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   reporter: 'list',
   use: {
-    baseURL: `http://localhost:${PORT}`,
+    baseURL: `http://localhost:${PORT}${BASE_PATH}`,
   },
   projects: [
     {
@@ -23,7 +25,7 @@ export default defineConfig({
   ],
   webServer: {
     command: `node tests/e2e/static-server.mjs`,
-    env: { PORT: String(PORT) },
+    env: { PORT: String(PORT), BASE_PATH },
     port: PORT,
     reuseExistingServer: !process.env.CI,
   },

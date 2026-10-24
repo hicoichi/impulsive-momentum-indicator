@@ -4,7 +4,8 @@ import { expect, test, type Page } from '@playwright/test'
 test.beforeEach(async ({ page }) => {
   await page.clock.install({ time: new Date('2026-10-24T09:00:00+09:00') })
   await page.clock.pauseAt(new Date('2026-10-24T09:00:01+09:00'))
-  await page.goto('/')
+  // baseURL のパス（サブパス配信時）からの相対で開く
+  await page.goto('./')
 })
 
 function activeSlide(page: Page) {

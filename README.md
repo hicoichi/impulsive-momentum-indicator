@@ -4,6 +4,8 @@
 
 政治・経済・天候・国際情勢など、社会や世界に対して人々が抱く衝動（一揆したい／革命したい／国外脱出したい／祭りたい）を集め、その数で世の中の空気を測る Web アプリです。
 
+公開ページ：https://hicoichi.github.io/impulsive-momentum-indicator/
+
 **現在はフェーズ1（モック）です。** 表示される数値はすべて模擬データで、実際の集計ではありません。バックエンドはフェーズ2で AWS 上に構築します。
 
 ## 必要なもの
@@ -49,7 +51,10 @@ NUXT_PUBLIC_VOTE_WINDOW=60s npm run dev
 
 ## リリース
 
-main に push すると GitHub Actions（`.github/workflows/release.yml`）が検査と静的生成を行い、`package.json` の `version` をタグにして GitHub Release を作成します。同じバージョンのリリースがすでにある場合はリリースしません。**リリースするときは `version` を上げてから push してください。**
+main に push すると GitHub Actions（`.github/workflows/release.yml`）が検査と静的生成を行い、次の2つに公開します。
+
+- **GitHub Pages**：push のたびに更新します。
+- **GitHub Release**：`package.json` の `version` をタグにして作成します。同じバージョンのリリースがすでにある場合は作りません。**リリースするときは `version` を上げてから push してください。**
 
 ## ドキュメント
 

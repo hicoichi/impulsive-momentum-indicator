@@ -424,7 +424,7 @@ US-A4、US-B4、US-B5、US-B6、US-C2、US-C3、US-D2、US-D3、US-E4、US-V1〜
 
 ### フェーズ1のリリース
 
-リリース1・2が揃った時点で、モックの状態のまま公開する（フェーズ1のリリース）。デプロイ先は T-05。
+リリース1・2が揃った時点で、モックの状態のまま公開する（フェーズ1のリリース）。公開先は GitHub Pages（https://hicoichi.github.io/impulsive-momentum-indicator/）。
 
 ### フェーズ2：AWS バックエンド
 
@@ -543,7 +543,7 @@ US-E5、F-01〜F-05。AWS の構成は T-08。
 | T-02 | TypeScript の採用 | 採用（strict） |
 | T-03 | パッケージマネージャー（npm／pnpm 等） | npm |
 | T-04 | テストツール（単体：Vitest 等、E2E：Playwright 等） | Vitest ＋ @nuxt/test-utils、Playwright |
-| T-05 | フェーズ1のデプロイ先（静的ホスティング等）と SSR／静的生成の別 | 静的生成。デプロイ先は未定（フェーズ2が AWS のため、AWS 上の静的ホスティングが候補） |
+| T-05 | フェーズ1のデプロイ先（静的ホスティング等）と SSR／静的生成の別 | **解消（2026-10-24）**：静的生成し、GitHub Pages に公開する。main への push のたびに更新 |
 | T-06 | Web フォント（Dela Gothic One、IBM Plex Mono、IBM Plex Sans JP）を Google Fonts から読み込むか、セルフホストするか | Google Fonts（モックと同じ） |
 | T-08 | フェーズ2の AWS 構成（API、データストア、リアルタイム配信、認証・識別、IaC） | 未定。フェーズ2の着手時に決める |
 | T-07 | モック HTML（リポジトリ直下、git 未追跡、ファイル名に空白を含む）をリポジトリで管理するか、置き場所を移すか | 現状のまま触らない |

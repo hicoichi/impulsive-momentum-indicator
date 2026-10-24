@@ -30,7 +30,7 @@
 | E2E テスト | Playwright | T-04 | 静的生成した `.output/public` を Node 標準の小さなサーバー（`tests/e2e/static-server.mjs`）で配信し、スマホ（390×844）と PC（1280×800）の2ビューポートで実行。時計は `page.clock` で止めて進める |
 | Lint／整形 | `@nuxt/eslint`（ESLint flat config） | — | 整形ルールも ESLint に寄せ、Prettier は導入しない |
 | レンダリング | 静的生成（`nuxt generate`）、SSR なしの静的ホスティング | T-05 | バックエンドがないため |
-| デプロイ先 | 未定 | T-05 | フェーズ2が AWS のため、AWS 上の静的ホスティングが候補 |
+| デプロイ先 | GitHub Pages【確定】 | T-05 | https://hicoichi.github.io/impulsive-momentum-indicator/ 。サブパス配信のため `NUXT_APP_BASE_URL` を指定して書き出す |
 | Web フォント | Dela Gothic One／IBM Plex Mono／IBM Plex Sans JP を Google Fonts から読み込む | T-06 | モックと同じ。セルフホストへの変更は T-06 で判断 |
 
 ## リリース（フェーズ1）
@@ -38,7 +38,9 @@
 - `.github/workflows/release.yml`：main への push で起動する。lint・型チェック・単体テスト・静的生成・E2E テストの後、`.output/public` を zip にまとめて GitHub Release として公開する。
 - タグは `package.json` の `version` から作る（`v1.2.3`）。同じタグのリリースがすでにあれば、リリースは作らない。**リリースするときは `version` を上げてから main に push する。**
 - 公開用ビルドでは検証用の環境変数（`NUXT_PUBLIC_VOTE_WINDOW`、`NUXT_PUBLIC_SHOW_PIPS`）を設定しない。設定されていた場合、ワークフローは失敗する。
-- 検査はすべて必須で、どれかが失敗するとリリースしない。
+- 検査はすべて必須で、どれかが失敗するとリリースも Pages の更新もしない。
+- GitHub Pages：main への push のたびに更新する（Release と違い、`version` を上げなくても更新される）。Release の zip はルートで動く版、Pages はサブパス（`/impulsive-momentum-indicator/`）版で、それぞれ書き出して E2E を通してから公開する。
+- E2E をサブパスで確かめるときは `E2E_BASE_PATH=/impulsive-momentum-indicator/` を指定する（書き出し時の `NUXT_APP_BASE_URL` と合わせる）。
 
 ## 採用しないもの
 

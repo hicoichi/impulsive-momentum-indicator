@@ -1,6 +1,7 @@
-# main への push で静的サイトをビルドし、GitHub Release として公開する。
-# リリースのタグは package.json の version から作る（例：1.2.3 → v1.2.3）。
-# 同じタグがすでにある場合は、ビルドと検査だけ行い、リリースは作らない。
+# main への push で静的サイトをビルドし、GitHub Release と GitHub Pages に公開する。
+# - GitHub Release：タグは package.json の version から作る（例：1.2.3 → v1.2.3）。
+#   同じタグがすでにある場合は、リリースは作らない。
+# - GitHub Pages：push のたびに更新する。サブパス（/リポジトリ名/）で配信するため、別に書き出す。
 name: Release
 
 on:
@@ -8,9 +9,7 @@ on:
     branches:
       - main
 
-# タグの作成とリリースの公開に必要
-permissions:
-  contents: write
+permissions: {}
 
 # 連続して push されたとき、同じタグのリリースを同時に作ろうとしないよう直列にする
 concurrency:
@@ -20,7 +19,12 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+    # タグの作成とリリースの公開に必要
+    permissions:
+      contents: write
+    env:
+      PAGES_BASE_PATH: /${{ github.event.repository.name }}/
     steps:
       - name: リポジトリを取得
         uses: actions/checkout@v7
@@ -98,3 +102,35 @@ jobs:
             --target "${GITHUB_SHA}" \
             --title "${{ steps.version.outputs.tag }}" \
             --generate-notes
+
+      # Release の zip はルートで動く版。Pages はサブパスで配信するため書き出し直す
+      - name: GitHub Pages 用に静的サイトを生成
+        env:
+          NUXT_APP_BASE_URL: ${{ env.PAGES_BASE_PATH }}
+        run: npm run generate
+
+      - name: E2E テスト（GitHub Pages 用）
+        env:
+          E2E_BASE_PATH: ${{ env.PAGES_BASE_PATH }}
+        run: npm run test:e2e
+
+      - name: GitHub Pages 用の成果物をアップロード
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: .output/public
+
+  deploy-pages:
+    needs: release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # GitHub Pages への公開に必要
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: GitHub Pages に公開
+        id: deployment
+        uses: actions/deploy-pages@v5
