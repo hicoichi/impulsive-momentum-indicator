@@ -1,11 +1,10 @@
-// 横スワイプ／ドラッグによる切替（USM US-B1）。数値はモックに合わせている
+// 横スワイプ／ドラッグによる切替（USM US-B1）。数値はモックに合わせている。
+// 端から端へループするため（USM C-09）、端での抵抗はかけない
 
-import { ref, type Ref } from 'vue'
+import { ref } from 'vue'
 
 /** これ以上動いたらドラッグとみなす */
 const DRAG_START_PX = 8
-/** 端でさらに引っぱったときの抵抗 */
-const EDGE_RESISTANCE = 0.3
 /** 切り替えの閾値：min(80px, 表示幅 × 18%) */
 const SWITCH_MAX_PX = 80
 const SWITCH_WIDTH_RATIO = 0.18
@@ -26,9 +25,10 @@ interface DragState {
 }
 
 export interface SwipeOptions {
-  index: Ref<number>
-  count: number
-  goTo: (index: number) => void
+  next: () => void
+  prev: () => void
+  /** ドラッグが始まったときに呼ぶ */
+  onDragStart?: () => void
   now?: () => number
 }
 
@@ -56,10 +56,11 @@ export function useSwipe(options: SwipeOptions) {
 
   function onPointerMove(event: PointerEvent): void {
     if (!drag) return
-    let dx = event.clientX - drag.startX
+    const dx = event.clientX - drag.startX
     if (!drag.moved) {
       if (Math.abs(dx) < DRAG_START_PX) return
       drag.moved = true
+      options.onDragStart?.()
       try {
         drag.element.setPointerCapture(drag.pointerId)
       }
@@ -67,9 +68,6 @@ export function useSwipe(options: SwipeOptions) {
         // ポインターがすでに離れている場合は捕捉できないが、ドラッグは続けられる
       }
     }
-    const atStart = options.index.value === 0
-    const atEnd = options.index.value === options.count - 1
-    if ((atStart && dx > 0) || (atEnd && dx < 0)) dx *= EDGE_RESISTANCE
     offset.value = dx
     dragging.value = true
   }
@@ -87,8 +85,8 @@ export function useSwipe(options: SwipeOptions) {
     const threshold = Math.min(SWITCH_MAX_PX, current.width * SWITCH_WIDTH_RATIO)
     const dx = offset.value
     reset()
-    if (dx < -threshold) options.goTo(options.index.value + 1)
-    else if (dx > threshold) options.goTo(options.index.value - 1)
+    if (dx < -threshold) options.next()
+    else if (dx > threshold) options.prev()
   }
 
   /** ドラッグ直後のクリックか */

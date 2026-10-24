@@ -13,8 +13,9 @@ function render(config: VerificationConfig = DEFAULT_CONFIG) {
   return wrapper
 }
 
+/** 本物のスライド（ループ用の複製を除く） */
 function slides(w: VueWrapper) {
-  return w.findAll('section.slide')
+  return w.findAll('section.slide:not([data-clone])')
 }
 
 function activeSlide(w: VueWrapper) {
@@ -91,15 +92,30 @@ describe('MainScreen', () => {
     expect(activeSlide(w).get('h2').text()).toBe('一揆したい')
   })
 
-  it('US-B2: 矢印ボタンで切り替わり、端では無効になる', async () => {
+  it('US-B2・C-09: 矢印ボタンで切り替わり、端から端へループする', async () => {
     const w = render()
     const prev = w.get('button[aria-label="前の衝動"]')
     const next = w.get('button[aria-label="次の衝動"]')
-    expect(prev.attributes('disabled')).toBeDefined()
+    expect(prev.attributes('disabled')).toBeUndefined()
+    await prev.trigger('click')
+    expect(activeSlide(w).get('h2').text()).toBe('祭りたい')
+    await next.trigger('click')
+    expect(activeSlide(w).get('h2').text()).toBe('一揆したい')
     for (let i = 0; i < 2; i++) await next.trigger('click')
     expect(activeSlide(w).get('h2').text()).toBe('祭りたい')
-    expect(next.attributes('disabled')).toBeDefined()
-    expect(prev.attributes('disabled')).toBeUndefined()
+    expect(next.attributes('disabled')).toBeUndefined()
+  })
+
+  it('C-09: ループ用の複製は両端にあり、操作も読み上げもされない', () => {
+    const w = render()
+    const all = w.findAll('section.slide')
+    expect(all.map(s => s.get('h2').text())).toEqual(['祭りたい', '一揆したい', '国外脱出したい', '祭りたい', '一揆したい'])
+    const clones = w.findAll('section.slide[data-clone]')
+    expect(clones).toHaveLength(2)
+    for (const clone of clones) {
+      expect(clone.attributes('inert')).toBeDefined()
+      expect(clone.attributes('aria-hidden')).toBe('true')
+    }
   })
 
   it('US-B3・US-B6: インジケーターで現在位置がわかり、押すと移動する', async () => {

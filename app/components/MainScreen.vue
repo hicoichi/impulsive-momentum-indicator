@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted } from 'vue'
 import { effectVariant, useImpulseBoard } from '../composables/useImpulseBoard'
+import { useLoopTrack } from '../composables/useLoopTrack'
 import { SWIPE_IGNORE_ATTR, useSwipe } from '../composables/useSwipe'
 import { createCountSource } from '../data/createCountSource'
 import { IMPULSE_COUNT, IMPULSE_KEYS, IMPULSES } from '../domain/impulse'
@@ -24,8 +25,19 @@ const board = useImpulseBoard({
 const isSimulation = !props.apiBaseUrl
 const { index, currentKey, counts, remaining, capped, message, effect, effectCount, liveCount } = board
 
-const swipe = useSwipe({ index, count: IMPULSE_COUNT, goTo: board.goTo })
+const loop = useLoopTrack({ count: IMPULSE_COUNT, index, next: board.next, prev: board.prev, goTo: board.goTo })
+const { trackElement } = loop
+
+const swipe = useSwipe({
+  next: loop.next,
+  prev: loop.prev,
+  onDragStart: loop.settle,
+})
 const { offset, dragging } = swipe
+
+// 両端に複製を置く：[最後の複製, 衝動1, …, 衝動n, 最初の複製]
+const firstKey = IMPULSE_KEYS[0]
+const lastKey = IMPULSE_KEYS[IMPULSE_COUNT - 1]
 
 const labels = IMPULSE_KEYS.map(key => IMPULSES[key].label)
 const theme = computed(() => IMPULSES[currentKey.value].theme)
@@ -36,10 +48,9 @@ const shakeEffect = computed(() => (effect.value === 'limit' ? variant.value : n
 const liveEffect = computed(() => (liveCount.value > 0 ? effectVariant(liveCount.value) : null))
 
 const trackStyle = computed(() => ({
-  '--slide-count': IMPULSE_COUNT,
-  // .track は全スライドを横に並べた幅なので、1枚ぶんは全体の 1/衝動の数
-  'transform': `translateX(calc(${-index.value * (100 / IMPULSE_COUNT)}% + ${offset.value}px))`,
-  'transition': dragging.value ? 'none' : 'transform .5s cubic-bezier(.2, .8, .2, 1)',
+  '--slide-count': loop.slotCount,
+  'transform': `translateX(calc(${loop.translatePercent.value}% + ${offset.value}px))`,
+  'transition': dragging.value || !loop.animated.value ? 'none' : 'transform .5s cubic-bezier(.2, .8, .2, 1)',
 }))
 
 const swipeIgnore = { [SWIPE_IGNORE_ATTR]: '' }
@@ -52,11 +63,11 @@ function onVote(): void {
 function onKeydown(event: KeyboardEvent): void {
   if (event.key === 'ArrowLeft') {
     event.preventDefault()
-    board.prev()
+    loop.prev()
   }
   else if (event.key === 'ArrowRight') {
     event.preventDefault()
-    board.next()
+    loop.next()
   }
 }
 
@@ -89,9 +100,24 @@ onBeforeUnmount(board.stop)
       @pointercancel="swipe.onPointerUp"
     >
       <div
+        ref="trackElement"
         class="track"
         :style="trackStyle"
+        @transitionend="loop.onTransitionEnd"
       >
+        <!-- 複製は見た目だけ。操作できず、読み上げもされない -->
+        <ImpulseSlide
+          v-if="lastKey"
+          key="clone-last"
+          data-clone
+          inert
+          :impulse="IMPULSES[lastKey]"
+          :count="counts[lastKey]"
+          :active="false"
+          :capped="capped"
+          :vote-effect="null"
+          :live-effect="null"
+        />
         <ImpulseSlide
           v-for="(key, i) in IMPULSE_KEYS"
           :key="key"
@@ -103,6 +129,18 @@ onBeforeUnmount(board.stop)
           :live-effect="i === index ? liveEffect : null"
           @vote="onVote"
         />
+        <ImpulseSlide
+          v-if="firstKey"
+          key="clone-first"
+          data-clone
+          inert
+          :impulse="IMPULSES[firstKey]"
+          :count="counts[firstKey]"
+          :active="false"
+          :capped="capped"
+          :vote-effect="null"
+          :live-effect="null"
+        />
         <div
           class="flash"
           :class="voteEffect && `flash-${voteEffect}`"
@@ -112,9 +150,8 @@ onBeforeUnmount(board.stop)
         type="button"
         class="arrow l"
         v-bind="swipeIgnore"
-        :disabled="index === 0"
         aria-label="前の衝動"
-        @click="board.prev"
+        @click="loop.prev"
       >
         <svg
           width="22"
@@ -130,9 +167,8 @@ onBeforeUnmount(board.stop)
         type="button"
         class="arrow r"
         v-bind="swipeIgnore"
-        :disabled="index === IMPULSE_COUNT - 1"
         aria-label="次の衝動"
-        @click="board.next"
+        @click="loop.next"
       >
         <svg
           width="22"
@@ -157,7 +193,7 @@ onBeforeUnmount(board.stop)
       <PageDots
         :labels="labels"
         :current="index"
-        @select="board.goTo"
+        @select="loop.jump"
       />
     </footer>
   </div>
@@ -269,11 +305,6 @@ onBeforeUnmount(board.stop)
 
 .arrow:hover {
   opacity: 1;
-}
-
-.arrow:disabled {
-  opacity: .15;
-  cursor: default;
 }
 
 .arrow.l {

@@ -25,15 +25,23 @@ describe('useImpulseBoard', () => {
     expect(board.counts.value.ikki).toBe(MOCK_INITIAL_OTHER_COUNTS.ikki)
   })
 
-  it('US-B1・Q-09: 端でループしない', () => {
+  it('C-09: 端から端へループする', () => {
     const { board } = setup()
-    board.prev()
-    expect(board.index.value).toBe(0)
     const last = IMPULSE_COUNT - 1
-    board.goTo(last)
-    board.next()
+    board.prev()
     expect(board.index.value).toBe(last)
     expect(board.currentKey.value).toBe('festival')
+    board.next()
+    expect(board.index.value).toBe(0)
+    expect(board.currentKey.value).toBe('ikki')
+  })
+
+  it('インジケーターからの直接移動は範囲内に収める', () => {
+    const { board } = setup()
+    board.goTo(IMPULSE_COUNT + 5)
+    expect(board.index.value).toBe(IMPULSE_COUNT - 1)
+    board.goTo(-1)
+    expect(board.index.value).toBe(0)
   })
 
   it('US-C1・US-D1: 投票すると表示中の衝動だけが +1 される', async () => {

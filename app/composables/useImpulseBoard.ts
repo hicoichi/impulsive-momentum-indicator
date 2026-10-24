@@ -150,8 +150,9 @@ export function useImpulseBoard(options: ImpulseBoardOptions) {
     effectCount,
     liveCount,
     goTo,
-    next: () => goTo(index.value + 1),
-    prev: () => goTo(index.value - 1),
+    // 端から端へループする（USM C-09）
+    next: () => goTo((index.value + 1) % IMPULSE_COUNT),
+    prev: () => goTo((index.value - 1 + IMPULSE_COUNT) % IMPULSE_COUNT),
     vote,
     tick,
     start,

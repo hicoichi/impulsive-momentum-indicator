@@ -114,8 +114,11 @@ test.describe('スマホ', () => {
     // 右へスワイプすると前へ
     await swipe(box.x + 100, box.x + 300)
     await expect(activeSlide(page).getByRole('heading')).toHaveText('一揆したい')
-    // 先頭でさらに右へスワイプしても切り替わらない
+    // 先頭でさらに右へスワイプすると、最後の衝動へループする（C-09）
     await swipe(box.x + 100, box.x + 300)
+    await expect(activeSlide(page).getByRole('heading')).toHaveText('祭りたい')
+    // 最後でさらに左へスワイプすると、最初の衝動へループする
+    await swipe(box.x + 300, box.x + 100)
     await expect(activeSlide(page).getByRole('heading')).toHaveText('一揆したい')
     expect(page.url()).toBe(url)
   })
@@ -137,13 +140,14 @@ test.describe('スマホ', () => {
 test.describe('PC', () => {
   test.skip(({ viewport }) => (viewport?.width ?? 0) <= 700, 'PC のビューポートだけで確認する')
 
-  test('US-B2: 矢印ボタンで切り替わり、端では無効になる', async ({ page }) => {
+  test('US-B2・C-09: 矢印ボタンで切り替わり、端から端へループする', async ({ page }) => {
     const prev = page.getByRole('button', { name: '前の衝動' })
     const next = page.getByRole('button', { name: '次の衝動' })
-    await expect(prev).toBeDisabled()
-    for (let i = 0; i < 2; i++) await next.click()
+    await expect(prev).toBeEnabled()
+    await prev.click()
     await expect(activeSlide(page).getByRole('heading')).toHaveText('祭りたい')
-    await expect(next).toBeDisabled()
+    await next.click()
+    await expect(activeSlide(page).getByRole('heading')).toHaveText('一揆したい')
   })
 
   test('US-B5: キーボードの ← → で切り替わる', async ({ page }) => {

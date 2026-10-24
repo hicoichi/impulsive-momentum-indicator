@@ -106,6 +106,23 @@ test('流量上限（429）なら +1 を元に戻す', async ({ page }) => {
   await expect(page.locator('.pip.on')).toHaveCount(10)
 })
 
+// 時計を止めずに動かすので、端をまたいだあとの差し替え（transitionend）が本物のブラウザで起きるかを確かめられる
+test('C-09: 端から端へループしたあとも、表示中の衝動が画面内に見えていて投票できる', async ({ page }) => {
+  const backend = new FakeBackend()
+  await open(page, backend)
+  await expect(activeSlide(page).getByTestId('count')).toHaveText('1,000')
+  await page.locator('.root').focus()
+  await page.keyboard.press('ArrowLeft')
+  await expect(activeSlide(page).getByRole('heading')).toHaveText('祭りたい')
+  // 移動が終わり、複製から本物のスライドへ差し替わるのを待つ
+  await expect(activeSlide(page).locator('button.emblem')).toBeInViewport({ ratio: 0.9 })
+  await voteAndWait(page)
+  await expect(activeSlide(page).getByTestId('count')).toHaveText('4,001')
+  await page.keyboard.press('ArrowRight')
+  await expect(activeSlide(page).getByRole('heading')).toHaveText('一揆したい')
+  await expect(activeSlide(page).locator('button.emblem')).toBeInViewport({ ratio: 0.9 })
+})
+
 test('開き直すと、保存したトークンで残り枠を取り直す', async ({ page }) => {
   const backend = new FakeBackend()
   await open(page, backend)
